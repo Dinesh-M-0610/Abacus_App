@@ -47,45 +47,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-//@Composable
-//fun StudentLevelsApp(
-//    navController: NavHostController,
-//    authViewModel: AuthViewModel,
-//    dashboardViewModel: DashboardViewModel,
-//    levelViewModel: LevelViewModel
-//) {
-//    var isLoggedIn by remember { mutableStateOf(authViewModel.isLoggedIn()) }
-//
-//    NavHost(navController = navController, startDestination = if (isLoggedIn) "dashboard" else "auth") {
-//        composable("auth") {
-//            AuthScreen(
-//                authViewModel = authViewModel,
-//                onLoginSuccess = {
-//                    isLoggedIn = true
-//                    navController.navigate("dashboard")
-//                }
-//            )
-//        }
-//        composable("dashboard") {
-//            DashboardScreen(
-//                dashboardViewModel = dashboardViewModel,
-//                onLevelSelected = { levelId ->
-//                    navController.navigate("level/$levelId")
-//                },
-//                onLogout = {
-//                    FirebaseAuth.getInstance().signOut()
-//                    isLoggedIn = false
-//                    navController.navigate("auth")
-//                }
-//            )
-//        }
-//        composable("level/{levelId}") { backStackEntry ->
-//            val levelId = backStackEntry.arguments?.getString("levelId")?.toIntOrNull() ?: 1
-//            LevelScreen(levelId = levelId, onBackPressed = { navController.popBackStack() }, levelViewModel = levelViewModel)
-//        }
-//    }
-//}
-
 @Composable
 fun StudentLevelsApp(
     navController: NavHostController,
