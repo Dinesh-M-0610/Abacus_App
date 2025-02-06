@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,13 +34,15 @@ class MainActivity : ComponentActivity() {
             val levelViewModel: LevelViewModel = viewModel()
             val authViewModel: AuthViewModel = viewModel()
             val dashboardViewModel: DashboardViewModel = viewModel()
+            val adminViewModel: AdminViewModel = viewModel()
             AbacusAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
                     StudentLevelsApp(
                         navController = navController,
                         authViewModel = authViewModel,
                         dashboardViewModel = dashboardViewModel,
-                        levelViewModel = levelViewModel
+                        levelViewModel = levelViewModel,
+                        adminViewModel = adminViewModel
                     )
                 }
             }
@@ -52,25 +55,31 @@ fun StudentLevelsApp(
     navController: NavHostController,
     authViewModel: AuthViewModel,
     dashboardViewModel: DashboardViewModel,
-    levelViewModel: LevelViewModel
+    levelViewModel: LevelViewModel,
+    adminViewModel: AdminViewModel
 ) {
+    val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
     var startDestination by remember { mutableStateOf("auth") }
-
-    LaunchedEffect(Unit) {
-        authViewModel.checkLoginStatus()
-        authViewModel.isLoggedIn.collectLatest { isLoggedIn ->
-            startDestination = if (isLoggedIn) "dashboard" else "auth"
-        }
-    }
-
+    startDestination = if (isLoggedIn) "dashboard" else "auth"
     NavHost(navController = navController, startDestination = startDestination) {
+        composable("admin_auth") {
+            AdminAuthScreen(
+                onAuthSuccess = { navController.navigate("admin_students") },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable("admin_students") {
+            AdminStudentListScreen(
+                viewModel = adminViewModel,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
         composable("auth") {
             AuthScreen(
                 authViewModel = authViewModel,
+                onAdminClick = { navController.navigate("admin_auth") },
                 onLoginSuccess = {
-                    navController.navigate("dashboard") {
-                        popUpTo("auth") { inclusive = true }
-                    }
+                    navController.navigate("dashboard")
                 }
             )
         }
@@ -81,8 +90,6 @@ fun StudentLevelsApp(
                     navController.navigate("level/$levelId")
                 },
                 onLogout = {
-                    FirebaseAuth.getInstance().signOut()
-                    authViewModel.checkLoginStatus()
                     navController.navigate("auth") {
                         popUpTo("dashboard") { inclusive = true }
                     }
@@ -99,5 +106,7 @@ fun StudentLevelsApp(
         }
     }
 }
+
+
 
 
