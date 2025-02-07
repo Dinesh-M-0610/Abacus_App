@@ -145,7 +145,6 @@ fun StudentActionDialog(
         text = {
             Column {
                 Text("Name: ${student.name}")
-                Text("Email: ${student.email}")
                 Spacer(modifier = Modifier.height(16.dp))
                 Text("Update Permissions:")
                 LevelPermissionDropdown(
