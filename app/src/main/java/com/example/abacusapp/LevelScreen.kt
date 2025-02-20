@@ -65,21 +65,27 @@ fun LevelScreen(levelId: Int, onBackPressed: () -> Unit, levelViewModel: LevelVi
             Text(text = "Selected message: ${levelViewModel.selectedMessage?.content ?: "None"}")
             Spacer(modifier = Modifier.height(8.dp))
 
-            TextField(
-                value = levelViewModel.userAnswer,
-                onValueChange = { levelViewModel.userAnswer = it },
-                label = { Text("Your answer") },
-                modifier = Modifier.fillMaxWidth()
-            )
+            Row(modifier = Modifier.fillMaxWidth()) {
+                TextField(
+                    value = levelViewModel.userAnswer,
+                    onValueChange = { levelViewModel.userAnswer = it },
+                    label = { Text("Your answer") },
+                    modifier = Modifier
+                        .weight(0.8f)
+                        .height(56.dp)
+                )
 
-            Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.width(8.dp))
 
-            Button(
-                onClick = { levelViewModel.submitAnswer() },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = levelViewModel.selectedMessage != null
-            ) {
-                Text("Submit")
+                Button(
+                    onClick = { levelViewModel.submitAnswer() },
+                    modifier = Modifier
+                        .weight(0.2f)
+                        .height(56.dp),
+                    enabled = levelViewModel.selectedMessage != null
+                ) {
+                    Text("Submit")
+                }
             }
 
             if (levelViewModel.feedback.isNotEmpty()) {
@@ -90,6 +96,7 @@ fun LevelScreen(levelId: Int, onBackPressed: () -> Unit, levelViewModel: LevelVi
                 )
             }
         }
+
     }
 }
 

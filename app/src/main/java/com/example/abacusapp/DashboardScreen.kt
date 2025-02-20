@@ -30,6 +30,7 @@ fun DashboardScreen(
     onLogout: () -> Unit
 ) {
     val levels by dashboardViewModel.levels.collectAsState()
+    val isLoading by dashboardViewModel.isLoading.collectAsState()
     var showLogoutDialog by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -47,23 +48,28 @@ fun DashboardScreen(
             )
         }
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-            , verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            LazyColumn(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                contentPadding = PaddingValues(16.dp)
+        if(isLoading){
+            LoadingScreen()
+        }
+        else{
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                , verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                items(levels) { level ->
-                    LevelCard(
-                        level = level,
-                        onLevelSelected = onLevelSelected
-                    )
+                LazyColumn(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    contentPadding = PaddingValues(16.dp)
+                ) {
+                    items(levels) { level ->
+                        LevelCard(
+                            level = level,
+                            onLevelSelected = onLevelSelected
+                        )
+                    }
                 }
             }
         }

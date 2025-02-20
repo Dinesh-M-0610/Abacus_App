@@ -17,6 +17,9 @@ class DashboardViewModel : ViewModel() {
     private val _levels = MutableStateFlow<List<Level>>(emptyList())
     val levels: StateFlow<List<Level>> = _levels.asStateFlow()
 
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
     init {
         fetchLevels()
     }
@@ -37,6 +40,9 @@ class DashboardViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 println("Error fetching levels: ${e.message}")
+            }
+            finally{
+                _isLoading.value = false;
             }
         }
     }

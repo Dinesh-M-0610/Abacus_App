@@ -36,7 +36,7 @@ fun AdminAuthScreen(
 
         Button(
             onClick = {
-                if (password == "admin123") { // Replace with actual admin password or authentication logic
+                if (password == "admin123") {
                     onAuthSuccess()
                 } else {
                     error = "Incorrect password"

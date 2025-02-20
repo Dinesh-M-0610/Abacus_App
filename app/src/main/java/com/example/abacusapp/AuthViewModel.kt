@@ -19,9 +19,14 @@ class AuthViewModel : ViewModel() {
     private val _isLoggedIn = MutableStateFlow(false)
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
     fun login(email: String, password: String, onLoginSuccess: () -> Unit) {
+        _isLoading.value = true
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
+                _isLoading.value = false;
                 if (task.isSuccessful) {
                     _isLoggedIn.value = true
                     onLoginSuccess()
@@ -32,6 +37,7 @@ class AuthViewModel : ViewModel() {
     }
 
     fun register(name: String, email: String, password: String, onLoginSuccess: () -> Unit) {
+        _isLoading.value = true
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -48,14 +54,17 @@ class AuthViewModel : ViewModel() {
                         db.collection("students").document(user.uid)
                             .set(userData)
                             .addOnSuccessListener {
+                                _isLoading.value = false
                                 _isLoggedIn.value = true
                                 onLoginSuccess()
                             }
                             .addOnFailureListener { e ->
+                                _isLoading.value = false
                                 errorMessage = e.message
                             }
                     }
                 } else {
+                    _isLoading.value = false
                     errorMessage = task.exception?.message
                 }
             }
