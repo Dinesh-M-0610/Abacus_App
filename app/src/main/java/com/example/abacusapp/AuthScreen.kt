@@ -103,7 +103,6 @@ fun AuthScreen(authViewModel: AuthViewModel, onLoginSuccess: () -> Unit, onAdmin
         }
     }
 }
-
 @Composable
 fun ErrorDialog(errorMessage: String, onDismiss: () -> Unit) {
     AlertDialog(
