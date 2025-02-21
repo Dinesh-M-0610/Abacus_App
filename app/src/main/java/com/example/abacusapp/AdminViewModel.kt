@@ -17,12 +17,16 @@ class AdminViewModel : ViewModel() {
     private val _students = MutableStateFlow<List<Student>>(emptyList())
     val students: StateFlow<List<Student>> = _students.asStateFlow()
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
     init {
         fetchStudents()
     }
 
     private fun fetchStudents() {
         viewModelScope.launch {
+            _isLoading.value = true;
             try {
                 val snapshot = db.collection("students").get().await()
                 _students.value = snapshot.documents.mapNotNull { doc ->
@@ -31,51 +35,40 @@ class AdminViewModel : ViewModel() {
             } catch (e: Exception) {
                 // Handle error
             }
+            finally{
+                _isLoading.value = false
+            }
         }
     }
 
     fun updateStudent(student: Student) {
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 db.collection("students").document(student.id).set(student).await()
-                fetchStudents() // Refresh the list
+                fetchStudents()
             } catch (e: Exception) {
                 // Handle error
+            }
+            finally {
+                _isLoading.value = false
             }
         }
     }
 
-//    fun removeStudent(student: Student) {
-//        viewModelScope.launch {
-//            try {
-//                // Delete from Firestore
-//                db.collection("students").document(student.id).delete().await()
-//
-//                // Delete from Authentication
-//                try {
-//                    val userRecord = auth.getUserByEmail(student.email).await()
-//                    if (auth.currentUser?.uid != userRecord.uid) {
-//                        // Only delete if the current user is not the one being deleted
-//                        auth.deleteUser(userRecord.uid).await()
-//                    } else {
-//                        throw Exception("Cannot delete the current admin user")
-//                    }
-//                } catch (e: FirebaseAuthException) {
-//                    // Handle the case where the user doesn't exist in Authentication
-//                    // This could happen if the user was deleted from Authentication but not from Firestore
-//                    println("User not found in Authentication: ${e.message}")
-//                }
-//
-//                fetchStudents() // Refresh the list
-//            } catch (e: Exception) {
-//                // Handle error
-//                println("Error removing student: ${e.message}")
-//            }
-//        }
-//    }
+    fun removeStudent(student: Student) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                db.collection("students").document(student.id)
+                    .update("access", false)
+                    .await()
+                fetchStudents()
+            } catch (e: Exception) {
+                // Handle error
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
 }
-
-
-
-
-

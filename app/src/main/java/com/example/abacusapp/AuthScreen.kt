@@ -1,7 +1,12 @@
 package com.example.abacusapp
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -82,8 +87,7 @@ fun AuthScreen(authViewModel: AuthViewModel, onLoginSuccess: () -> Unit, onAdmin
                     Text(text = if (isLogin) "Need to register?" else "Already have an account?")
                 }
                 if (error != null) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = error, color = MaterialTheme.colorScheme.error)
+                    ErrorDialog(errorMessage = error, onDismiss = { authViewModel.errorMessage = null })
                 }
             }
 
@@ -98,4 +102,31 @@ fun AuthScreen(authViewModel: AuthViewModel, onLoginSuccess: () -> Unit, onAdmin
             }
         }
     }
+}
+
+@Composable
+fun ErrorDialog(errorMessage: String, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            Button(onClick = onDismiss) {
+                Text("OK")
+            }
+        },
+        title = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Error", color = MaterialTheme.colorScheme.error)
+                IconButton(onClick = onDismiss) {
+                    Icon(Icons.Default.Close, contentDescription = "Close", tint = MaterialTheme.colorScheme.error)
+                }
+            }
+        },
+        text = {
+            Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
+        }
+    )
 }

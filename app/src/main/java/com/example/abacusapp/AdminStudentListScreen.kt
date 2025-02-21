@@ -12,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminStudentListScreen(
@@ -20,6 +19,7 @@ fun AdminStudentListScreen(
     onBackClick: () -> Unit
 ) {
     val students by viewModel.students.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
     var selectedStudent by remember { mutableStateOf<Student?>(null) }
 
     Scaffold(
@@ -34,17 +34,21 @@ fun AdminStudentListScreen(
             )
         }
     ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentPadding = PaddingValues(16.dp)
-        ) {
-            items(students) { student ->
-                StudentCard(
-                    student = student,
-                    onClick = { selectedStudent = student }
-                )
+        if(isLoading){
+            LoadingScreen()
+        } else{
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                items(students) { student ->
+                    StudentCard(
+                        student = student,
+                        onClick = { selectedStudent = student }
+                    )
+                }
             }
         }
     }
@@ -57,10 +61,10 @@ fun AdminStudentListScreen(
                 viewModel.updateStudent(updatedStudent)
                 selectedStudent = null
             },
-//            onRemove = {
-//                viewModel.removeStudent(student)
-//                selectedStudent = null
-//            }
+            onRemove = {
+                viewModel.removeStudent(student)
+                selectedStudent = null
+            }
         )
     }
 }
@@ -135,7 +139,7 @@ fun StudentActionDialog(
     student: Student,
     onDismiss: () -> Unit,
     onUpdate: (Student) -> Unit,
-//    onRemove: () -> Unit
+    onRemove: () -> Unit
 ) {
     var updatedStudent by remember { mutableStateOf(student) }
 
@@ -175,24 +179,26 @@ fun StudentActionDialog(
             }
         },
         confirmButton = {
-            Button(onClick = { onUpdate(updatedStudent) }) {
-                Text("Update")
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Button(onClick = { onUpdate(updatedStudent) }) {
+                    Text("Update")
+                }
+                Button(
+                    onClick = onRemove,
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Remove")
+                }
             }
         },
-//        dismissButton = {
-//            Row {
-//                Button(
-//                    onClick = onRemove,
-//                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-//                ) {
-//                    Text("Remove")
-//                }
-//                Spacer(modifier = Modifier.width(8.dp))
-//                Button(onClick = onDismiss) {
-//                    Text("Cancel")
-//                }
-//            }
-//        }
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
     )
 }
 

@@ -28,8 +28,27 @@ class AuthViewModel : ViewModel() {
             .addOnCompleteListener { task ->
                 _isLoading.value = false;
                 if (task.isSuccessful) {
-                    _isLoggedIn.value = true
-                    onLoginSuccess()
+                    val user = auth.currentUser
+                    if (user != null) {
+                        db.collection("students").document(user.uid).get()
+                            .addOnSuccessListener { document ->
+                                if (document.exists()) {
+                                    val access = document.getBoolean("access") ?: true
+                                    if (!access) {
+                                        errorMessage = "You don't have access"
+                                        FirebaseAuth.getInstance().signOut()
+                                    } else {
+                                        _isLoggedIn.value = true
+                                        onLoginSuccess()
+                                    }
+                                } else {
+                                    errorMessage = "User data not found"
+                                }
+                            }
+                            .addOnFailureListener { e ->
+                                errorMessage = e.message
+                            }
+                    }
                 } else {
                     errorMessage = task.exception?.message
                 }
@@ -49,7 +68,8 @@ class AuthViewModel : ViewModel() {
                             "level2" to false,
                             "level3" to false,
                             "level4" to false,
-                            "level5" to false
+                            "level5" to false,
+                            "access" to true
                         )
                         db.collection("students").document(user.uid)
                             .set(userData)
@@ -74,6 +94,3 @@ class AuthViewModel : ViewModel() {
         _isLoggedIn.value = FirebaseAuth.getInstance().currentUser != null
     }
 }
-
-
-
