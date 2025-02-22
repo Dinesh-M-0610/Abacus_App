@@ -11,7 +11,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class AdminViewModel : ViewModel() {
-    private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
 
     private val _students = MutableStateFlow<List<Student>>(emptyList())
@@ -62,6 +61,22 @@ class AdminViewModel : ViewModel() {
             try {
                 db.collection("students").document(student.id)
                     .update("access", false)
+                    .await()
+                fetchStudents()
+            } catch (e: Exception) {
+                // Handle error
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun allowStudent(student: Student) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                db.collection("students").document(student.id)
+                    .update("access", true)
                     .await()
                 fetchStudents()
             } catch (e: Exception) {

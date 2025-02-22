@@ -57,6 +57,10 @@ fun AdminStudentListScreen(
         StudentActionDialog(
             student = student,
             onDismiss = { selectedStudent = null },
+            onAllow = {
+                viewModel.allowStudent(student)
+                selectedStudent = null
+            },
             onUpdate = { updatedStudent ->
                 viewModel.updateStudent(updatedStudent)
                 selectedStudent = null
@@ -138,6 +142,7 @@ fun StudentCard(
 fun StudentActionDialog(
     student: Student,
     onDismiss: () -> Unit,
+    onAllow: () -> Unit,
     onUpdate: (Student) -> Unit,
     onRemove: () -> Unit
 ) {
@@ -186,17 +191,21 @@ fun StudentActionDialog(
                 Button(onClick = { onUpdate(updatedStudent) }) {
                     Text("Update")
                 }
-                Button(
-                    onClick = onRemove,
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                ) {
-                    Text("Remove")
+                if (student.access) {
+                    Button(
+                        onClick = onRemove,
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    ) {
+                        Text("Remove")
+                    }
+                } else {
+                    Button(
+                        onClick = onAllow,
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    ) {
+                        Text("Allow")
+                    }
                 }
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
             }
         }
     )
