@@ -1,19 +1,24 @@
 package com.example.abacusapp
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -42,29 +47,69 @@ fun AuthScreen(authViewModel: AuthViewModel, onLoginSuccess: () -> Unit, onAdmin
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = if (isLogin) "Login" else "Register", style = MaterialTheme.typography.headlineMedium)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = if (isLogin) "Welcome Back" else "Register", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(16.dp))
                 if (!isLogin) {
-                    TextField(
+                    OutlinedTextField(
                         value = name,
                         onValueChange = { name = it },
                         label = { Text("Name") },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color.Black,
+                            unfocusedTextColor = Color.Black,
+                            disabledTextColor = Color.Gray,
+                            focusedContainerColor = Color(0xFFEDEDED),
+                            unfocusedContainerColor = Color(0xFFEDEDED),
+                            disabledContainerColor = Color.LightGray,
+                            cursorColor = Color.Black,
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent,
+                            disabledBorderColor = Color.Transparent
+                        )
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
-                TextField(
+                OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
                     label = { Text("Email") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        disabledTextColor = Color.Gray,
+                        focusedContainerColor = Color(0xFFEDEDED),
+                        unfocusedContainerColor = Color(0xFFEDEDED),
+                        disabledContainerColor = Color.LightGray,
+                        cursorColor = Color.Black,
+                        focusedBorderColor = Color.Transparent,
+                        unfocusedBorderColor = Color.Transparent,
+                        disabledBorderColor = Color.Transparent
+                    )
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                TextField(
+                OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
                     label = { Text("Password") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        disabledTextColor = Color.Gray,
+                        focusedContainerColor = Color(0xFFEDEDED),
+                        unfocusedContainerColor = Color(0xFFEDEDED),
+                        disabledContainerColor = Color.LightGray,
+                        cursorColor = Color.Black,
+                        focusedBorderColor = Color.Transparent,
+                        unfocusedBorderColor = Color.Transparent,
+                        disabledBorderColor = Color.Transparent
+                    )
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
@@ -75,9 +120,13 @@ fun AuthScreen(authViewModel: AuthViewModel, onLoginSuccess: () -> Unit, onAdmin
                             authViewModel.register(name, email, password, onLoginSuccess)
                         }
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
                 ) {
-                    Text(text = if (isLogin) "Login" else "Register")
+                    Text(text = if (isLogin) "Login" else "Register", color = Color.White)
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 TextButton(
@@ -103,8 +152,11 @@ fun AuthScreen(authViewModel: AuthViewModel, onLoginSuccess: () -> Unit, onAdmin
         }
     }
 }
+
 @Composable
 fun ErrorDialog(errorMessage: String, onDismiss: () -> Unit) {
+    val summarizedError = summarizeError(errorMessage)
+
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
@@ -125,7 +177,22 @@ fun ErrorDialog(errorMessage: String, onDismiss: () -> Unit) {
             }
         },
         text = {
-            Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
+            Text(text = summarizedError, color = MaterialTheme.colorScheme.error)
         }
     )
+}
+
+fun summarizeError(errorMessage: String): String {
+    return when {
+        "There is no user record" in errorMessage -> "No account found with this email. Please register first."
+        "The email address is badly formatted" in errorMessage -> "Invalid email format. Please enter a valid email."
+        "The password is invalid" in errorMessage || "The supplied auth credential is incorrect" in errorMessage ->
+            "Incorrect password. Please try again."
+        "A network error" in errorMessage -> "Network error. Please check your internet connection."
+        "The email address is already in use" in errorMessage -> "This email is already registered. Try logging in instead."
+        "Password should be at least" in errorMessage -> "Your password is too short. Use at least 6 characters."
+        "User disabled" in errorMessage -> "This account has been disabled. Contact support for assistance."
+        "TOO_MANY_ATTEMPTS_TRY_LATER" in errorMessage -> "Too many login attempts. Please try again later."
+        else -> "An error occurred. Please try again."
+    }
 }

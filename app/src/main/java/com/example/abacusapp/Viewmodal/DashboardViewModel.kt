@@ -34,8 +34,7 @@ class DashboardViewModel : ViewModel() {
                         Level(1, "Level 1", studentDoc.getBoolean("level1") ?: false),
                         Level(2, "Level 2", studentDoc.getBoolean("level2") ?: false),
                         Level(3, "Level 3", studentDoc.getBoolean("level3") ?: false),
-                        Level(4, "Level 4", studentDoc.getBoolean("level4") ?: false),
-                        Level(5, "Level 5", studentDoc.getBoolean("level5") ?: false)
+                        Level(4, "Level 4", studentDoc.getBoolean("level4") ?: false)
                     )
                 }
             } catch (e: Exception) {

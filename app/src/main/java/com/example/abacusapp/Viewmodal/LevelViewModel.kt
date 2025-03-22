@@ -29,10 +29,6 @@ class LevelViewModel : ViewModel() {
                 Message("What is 10 - 2?", "8"),
                 Message("What is 7 + 4?", "11")
             )
-            5 -> listOf(
-                Message("What is 25 / 5?", "5"),
-                Message("What is 14 + 3?", "17")
-            )
             else -> emptyList()
         }
     }

@@ -46,7 +46,8 @@ fun LevelScreen(levelId: Int, onBackPressed: () -> Unit, levelViewModel: LevelVi
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { levelViewModel.selectMessage(message) },
+                        .clickable { levelViewModel.selectMessage(message) }
+                    ,
                     elevation = CardDefaults.cardElevation(4.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = when (message.status) {
@@ -58,6 +59,7 @@ fun LevelScreen(levelId: Int, onBackPressed: () -> Unit, levelViewModel: LevelVi
                 ) {
                     Text(text = message.content, modifier = Modifier.padding(16.dp))
                 }
+
             }
         }
 
