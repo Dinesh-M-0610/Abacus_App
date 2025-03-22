@@ -176,11 +176,6 @@ fun StudentActionDialog(
                     isPermitted = updatedStudent.level4,
                     onPermissionChange = { updatedStudent = updatedStudent.copy(level4 = it) }
                 )
-                LevelPermissionDropdown(
-                    level = 5,
-                    isPermitted = updatedStudent.level5,
-                    onPermissionChange = { updatedStudent = updatedStudent.copy(level5 = it) }
-                )
             }
         },
         confirmButton = {
