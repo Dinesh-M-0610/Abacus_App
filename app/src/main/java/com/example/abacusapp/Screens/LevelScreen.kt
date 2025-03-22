@@ -19,11 +19,14 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LevelScreen(levelId: Int, onBackPressed: () -> Unit, levelViewModel: LevelViewModel) {
+    val context = LocalContext.current  // ✅ Get context
+
     LaunchedEffect(levelId) {
         levelViewModel.loadMessages(levelId)
     }
@@ -46,7 +49,7 @@ fun LevelScreen(levelId: Int, onBackPressed: () -> Unit, levelViewModel: LevelVi
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { levelViewModel.selectMessage(message) }
+                        .clickable { levelViewModel.selectMessage(message, context) }
                     ,
                     elevation = CardDefaults.cardElevation(4.dp),
                     colors = CardDefaults.cardColors(
@@ -73,14 +76,14 @@ fun LevelScreen(levelId: Int, onBackPressed: () -> Unit, levelViewModel: LevelVi
                     onValueChange = { levelViewModel.userAnswer = it },
                     label = { Text("Your answer") },
                     modifier = Modifier
-                        .weight(0.8f)
+                        .weight(0.6f)
                         .height(56.dp)
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Button(
-                    onClick = { levelViewModel.submitAnswer() },
+                    onClick = { levelViewModel.submitAnswer(context) },
                     modifier = Modifier
                         .weight(0.2f)
                         .height(56.dp),

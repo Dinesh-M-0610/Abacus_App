@@ -8,7 +8,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,9 +19,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.abacusapp.Screens.SplashScreen
 import com.example.abacusapp.ui.theme.AbacusAppTheme
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.flow.collectLatest
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -59,13 +57,17 @@ fun StudentLevelsApp(
     adminViewModel: AdminViewModel
 ) {
     val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
-    var startDestination by remember { mutableStateOf("auth") }
-    startDestination = if (isLoggedIn) "dashboard" else "auth"
+    var startDestination by remember { mutableStateOf("splash") }
+
     NavHost(navController = navController, startDestination = startDestination) {
-        composable("admin_auth") {
-            AdminAuthScreen(
-                onAuthSuccess = { navController.navigate("admin_students") },
-                onBackClick = { navController.popBackStack() }
+        composable("splash") {
+            SplashScreen(
+                onTimeout = {
+                    val nextScreen = if (isLoggedIn) "dashboard" else "auth"
+                    navController.navigate(nextScreen) {
+                        popUpTo("splash") { inclusive = true }
+                    }
+                }
             )
         }
         composable("admin_students") {
